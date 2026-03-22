@@ -6,49 +6,90 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Easton Park TV - Full Control</title>
+  <title>Easton Park - Ultra Clean Display</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; cursor: none; font-family: sans-serif; }
+    html, body { 
+      width: 100%; height: 100%; 
+      background: #000; overflow: hidden; 
+      cursor: none; 
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
 
-    .main-container { width: 100vw; height: 100vh; display: flex; flex-direction: column; position: relative; }
+    /* CONTAINER UTAMA: FULL 1080P */
+    .screen-wrapper {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-    /* TOMBOL KONTROL POJOK KIRI ATAS */
+    /* VIDEO FULL SCREEN (DI TIMPA TEKS) */
+    #video-slot {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill; /* Paksa 1920x1080 */
+      z-index: 1;
+    }
+
+    /* TOMBOL FULLSCREEN SANGAT JELAS */
     #btn-control {
       position: absolute;
-      top: 15px;
-      left: 15px;
-      width: 50px;
-      height: 50px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      top: 20px; left: 20px;
+      width: 65px; height: 65px;
+      background: #00468b; /* Biru Easton kontras */
+      border: 3px solid #ffffff;
+      border-radius: 15px;
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
-      z-index: 9999;
-      transition: all 0.3s;
-      border: 1px solid rgba(255,255,255,0.3);
-      opacity: 0.5; /* Agak transparan supaya clean */
+      z-index: 999;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
-    #btn-control:hover { opacity: 1; background: rgba(255, 255, 255, 0.4); cursor: default; }
-    
-    /* Ikon SVG Fullscreen & Exit */
-    .icon { fill: white; width: 30px; height: 30px; display: none; }
+    .icon { fill: white; width: 40px; height: 40px; display: none; }
     .show { display: block; }
 
-    /* AREA VIDEO */
-    .video-area { flex: 1; width: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    #video-slot { width: 100%; height: 100%; object-fit: fill; }
+    /* RUNNING TEXT ROUNDED (OVERLAY/MENIMPA VIDEO) */
+    .overlay-ticker {
+      position: absolute;
+      bottom: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 94%;
+      height: 65px;
+      background: rgba(0, 0, 0, 0.85); /* Hitam pekat transparan */
+      backdrop-filter: blur(5px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 100px; /* Rounded Sempurna */
+      display: flex; align-items: center;
+      overflow: hidden;
+      z-index: 10;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
 
-    /* AREA RUNNING TEXT */
-    .footer-area { width: 100%; height: 60px; background: #000; display: flex; align-items: center; justify-content: center; padding-bottom: 8px; }
-    .ticker-frame { width: 98%; height: 45px; background: rgba(25, 25, 25, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 30px; overflow: hidden; display: flex; align-items: center; }
-    
-    .marquee-wrapper { display: flex; white-space: nowrap; animation: marquee-move 22s linear infinite; }
-    .ticker-text { font-size: 24px; font-weight: bold; color: #fff; text-transform: uppercase; padding-right: 250px; }
+    /* ANIMASI SEAMLESS TANPA JEDA */
+    .marquee-container {
+      display: flex;
+      white-space: nowrap;
+      will-change: transform;
+      animation: seamless-scroll 18s linear infinite;
+    }
 
-    @keyframes marquee-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .ticker-text {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding-right: 150px; /* Space antar teks */
+      display: inline-block;
+    }
+
+    @keyframes seamless-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); } /* Geser tepat setengah konten */
+    }
   </style>
 </head>
 <body>
@@ -58,75 +99,51 @@
     <svg id="icon-exit" class="icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
   </div>
 
-  <div class="main-container">
-    <div class="video-area">
-      <video id="video-slot" muted playsinline loop></video>
-    </div>
-    <div class="footer-area">
-      <div class="ticker-frame">
-        <div class="marquee-wrapper">
-          <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
-          <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
-        </div>
+  <div class="screen-wrapper">
+    <video id="video-slot" muted playsinline loop></video>
+
+    <div class="overlay-ticker">
+      <div class="marquee-container">
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
       </div>
     </div>
   </div>
 
 <script>
-  const VIDEO_NAME = "reminder%20(30%20x%2020%20cm)-2.mp4";
-  const btn = document.getElementById('btn-control');
+  const VIDEO_URL = "reminder%20(30%20x%2020%20cm)-2.mp4";
+  const v = document.getElementById('video-slot');
   const iconFs = document.getElementById('icon-fs');
   const iconExit = document.getElementById('icon-exit');
-  const v = document.getElementById('video-slot');
 
-  // FUNGSI UTAMA TOMBOL
   function handleFS() {
     if (!document.fullscreenElement) {
-      enterFS();
+      const doc = document.documentElement;
+      if (doc.requestFullscreen) doc.requestFullscreen();
+      else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+      
+      v.src = VIDEO_URL + "?v=" + new Date().getTime();
+      v.play();
+      
+      iconFs.classList.remove('show');
+      iconExit.classList.add('show');
     } else {
-      exitFS();
-    }
-  }
-
-  function enterFS() {
-    const doc = document.documentElement;
-    if (doc.requestFullscreen) doc.requestFullscreen();
-    else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
-    
-    // Putar video
-    if(!v.src) v.src = VIDEO_NAME + "?v=" + new Date().getTime();
-    v.play();
-    
-    // Ganti Ikon ke EXIT (X)
-    iconFs.classList.remove('show');
-    iconExit.classList.add('show');
-  }
-
-  function exitFS() {
-    if (document.exitFullscreen) document.exitFullscreen();
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-    
-    // Ganti Ikon ke FS (Kotak)
-    iconExit.classList.remove('show');
-    iconFs.classList.add('show');
-  }
-
-  // Deteksi jika user tekan ESC di keyboard/remote
-  document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement) {
+      if (document.exitFullscreen) document.exitFullscreen();
       iconExit.classList.remove('show');
       iconFs.classList.add('show');
     }
-  });
+  }
 
-  // AUTO REFRESH INSTAN (2 DETIK)
-  let lastVer = "";
+  // AUTO REFRESH INSTAN 2 DETIK
+  let lastTag = "";
   function checkUpdate() {
     fetch(window.location.href, { method: 'HEAD', cache: 'no-cache' })
       .then(res => {
-        const ver = res.headers.get("Last-Modified") || res.headers.get("ETag");
-        if (lastVer && ver && lastVer !== ver) location.reload(true);
-        lastVer = ver;
+        const currentTag = res.headers.get("Last-Modified") || res.headers.get("ETag");
+        if (lastTag && currentTag && lastTag !== currentTag) location.reload(true);
+        lastTag = currentTag;
       }).catch(() => {});
   }
 
@@ -134,7 +151,7 @@
   
   window.onload = () => {
     checkUpdate();
-    v.src = VIDEO_NAME;
+    v.src = VIDEO_URL;
   };
 </script>
 </body>
