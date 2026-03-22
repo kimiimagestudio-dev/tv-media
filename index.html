@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TV Display - Instant Update</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; cursor: none; font-family: sans-serif; }
+
+    .main-container { width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+
+    /* AREA VIDEO */
+    .video-area { flex: 1; width: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    #video-slot, #img-slot { width: 100%; height: 100%; object-fit: fill; display: none; opacity: 0; transition: opacity 0.5s; }
+    .active { display: block !important; opacity: 1 !important; }
+
+    /* AREA RUNNING TEXT */
+    .footer-area { width: 100%; height: 55px; background: #000; display: flex; align-items: center; justify-content: center; padding-bottom: 5px; }
+    .ticker-frame { width: 98%; height: 40px; background: rgba(25, 25, 25, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; display: flex; align-items: center; overflow: hidden; }
+    
+    .marquee-wrapper { display: flex; white-space: nowrap; animation: marquee-seamless 25s linear infinite; }
+    .ticker-text { font-size: 20px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1.5px; padding-right: 200px; }
+
+    @keyframes marquee-seamless { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    #fs-trigger { position: fixed; top: 0; left: 0; width: 50px; height: 50px; z-index: 9999; opacity: 0; }
+  </style>
+</head>
+<body onclick="startTV()">
+
+  <div id="fs-trigger" onclick="toggleFullscreen()"></div>
+
+  <div class="main-container">
+    <div class="video-area">
+      <video id="video-slot" muted playsinline loop></video>
+      <img id="img-slot">
+    </div>
+    <div class="footer-area">
+      <div class="ticker-frame">
+        <div class="marquee-wrapper">
+          <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+          <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const mediaSource = {
+    type: "video",
+    url: "https://github.com/kimiimagestudio-dev/tv-media/raw/refs/heads/main/redpandacompress_TESTING%20TV%20MEDIA%20(4).mp4"
+  };
+
+  const vSlot = document.getElementById('video-slot');
+  const iSlot = document.getElementById('img-slot');
+
+  function startTV() {
+    enterFullscreen();
+    renderMedia();
+    document.body.onclick = null;
+  }
+
+  function renderMedia() {
+    const cacheBuster = "?v=" + new Date().getTime();
+    if (mediaSource.type === "video") {
+      vSlot.src = mediaSource.url + cacheBuster;
+      vSlot.classList.add('active');
+      vSlot.play();
+    } else {
+      iSlot.src = mediaSource.url + cacheBuster;
+      iSlot.classList.add('active');
+    }
+  }
+
+  function enterFullscreen() {
+    const doc = document.documentElement;
+    if (doc.requestFullscreen) doc.requestFullscreen();
+    else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) enterFullscreen();
+    else document.exitFullscreen();
+  }
+
+  // ===================================================
+  // LOGIKA INSTANT REFRESH (Cek Tiap 2 DETIK)
+  // ===================================================
+  let currentVersion = "";
+
+  function checkUpdate() {
+    // Mengambil header file ini sendiri dari server secara cepat
+    fetch(window.location.href, { method: 'HEAD', cache: 'no-cache' })
+      .then(res => {
+        const newVersion = res.headers.get("Last-Modified") || res.headers.get("ETag");
+        
+        // Jika versi di server berbeda dengan versi yang sedang jalan
+        if (currentVersion && newVersion && currentVersion !== newVersion) {
+          console.log("Update detected! Refreshing now...");
+          location.reload(true); // Paksa reload dari server
+        }
+        currentVersion = newVersion;
+      })
+      .catch(e => console.error("Update check failed"));
+  }
+
+  // Jalankan pengecekan setiap 2000ms (2 detik)
+  setInterval(checkUpdate, 2000);
+  
+  window.onload = () => {
+    checkUpdate(); // Ambil versi awal saat load
+    renderMedia();
+  };
+</script>
+</body>
+</html>
