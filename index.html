@@ -6,14 +6,14 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Easton Park - Seamless Display</title>
+  <title>Easton Park - Seamless Display Rounded</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
     html, body { 
       width: 100%; height: 100%; 
       background: #000; overflow: hidden; 
       cursor: none; 
-      font-family: 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
     }
 
     .screen-wrapper {
@@ -23,28 +23,38 @@
       overflow: hidden;
     }
 
-    /* VIDEO FULL 1080P */
+    /* VIDEO FULL SCREEN */
     #video-slot {
       position: absolute;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      object-fit: fill;
+      object-fit: fill; /* Paksa memenuhi layar 1080p */
       z-index: 1;
     }
 
-    /* RUNNING TEXT ULTRA TRANSPARENT & BOTTOM */
+    /* RUNNING TEXT ROUNDED & GLASSMORPHISM */
     .overlay-ticker {
       position: absolute;
-      bottom: 10px; /* Mentok bawah */
-      left: 0;
-      width: 100%;
-      height: 45px;
-      /* Background lebih transparan (0.4) */
-      background: rgba(0, 0, 0, 0.4); 
-      display: flex; align-items: center;
+      bottom: 25px; /* Jarak dari bawah */
+      left: 30px;   /* Jarak dari kiri */
+      right: 30px;  /* Jarak dari kanan */
+      height: 55px; /* Sedikit lebih tinggi agar teks leluasa */
+      
+      /* Efek Transparan & Blur (Kaca) */
+      background: rgba(0, 0, 0, 0.45); 
+      backdrop-filter: blur(12px); 
+      -webkit-backdrop-filter: blur(12px);
+      
+      /* Frame Rounded Sempurna */
+      border-radius: 50px; 
+      border: 1px solid rgba(255, 255, 255, 0.15); /* Garis tepi halus */
+      
+      display: flex; 
+      align-items: center;
       overflow: hidden;
       z-index: 10;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
     /* ANIMASI SEAMLESS TANPA PUTUS */
@@ -52,23 +62,24 @@
       display: flex;
       white-space: nowrap;
       will-change: transform;
-      /* Durasi 20 detik untuk kehalusan jalan teks */
-      animation: seamless-scroll 20s linear infinite;
+      /* Kecepatan 25 detik (sesuaikan jika teks terlalu panjang/pendek) */
+      animation: seamless-scroll 25s linear infinite;
     }
 
     .ticker-text {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: 700;
       color: #ffffff;
       text-transform: uppercase;
-      /* Space antar teks agar rapi */
-      padding-right: 100px; 
+      letter-spacing: 1.5px;
+      padding-right: 200px; /* Jarak antar pengulangan teks */
       display: inline-block;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     @keyframes seamless-scroll {
       0% { transform: translateX(0); }
-      /* Geser tepat ke titik awal duplikasi */
+      /* Geser tepat ke titik awal duplikasi (50% dari total lebar container) */
       100% { transform: translateX(-50%); } 
     }
   </style>
@@ -89,23 +100,25 @@
   </div>
 
 <script>
+  // Nama file video disesuaikan dengan milik Anda
   const VIDEO_URL = "reminder%20(30%20x%2020%20cm)-2.mp4";
   const v = document.getElementById('video-slot');
 
   function startDisplay() {
-    // Paksa Fullscreen
+    // Aktifkan Fullscreen
     const doc = document.documentElement;
     if (doc.requestFullscreen) doc.requestFullscreen();
     else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
     
-    // Putar Video
+    // Putar Video dengan cache buster agar selalu fresh
     v.src = VIDEO_URL + "?v=" + new Date().getTime();
     v.play();
     
+    // Hapus event click setelah mulai
     document.body.onclick = null; 
   }
 
-  // AUTO REFRESH INSTAN 2 DETIK
+  // SISTEM AUTO REFRESH (Cek perubahan file setiap 2 detik)
   let lastUpdateTag = "";
   function checkUpdate() {
     fetch(window.location.href, { method: 'HEAD', cache: 'no-cache' })
@@ -124,7 +137,7 @@
     checkUpdate();
     v.src = VIDEO_URL;
     v.play().catch(() => {
-      console.log("Menunggu interaksi user...");
+      console.log("Menunggu interaksi user untuk mulai (klik layar)...");
     });
   };
 </script>
