@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Easton Park - Seamless No Delay</title>
+  <title>Easton Park - Single Line Loop</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
+    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
 
     .screen-wrapper { position: relative; width: 100vw; height: 100vh; }
 
@@ -17,54 +17,55 @@
       object-fit: fill; z-index: 1;
     }
 
-    /* CONTAINER UTAMA */
+    /* CONTAINER KONTROL BAWAH */
     .bottom-controls {
       position: absolute;
       bottom: 20px;
       left: 20px;
       right: 20px;
       display: flex;
-      gap: 10px;
+      gap: 12px;
       z-index: 10;
       align-items: center;
     }
 
-    /* TICKER FRAME */
+    /* TICKER FRAME ROUNDED & TRANSAPARENT */
     .overlay-ticker {
       flex: 1;
-      height: 35px;
+      height: 38px;
       background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border-radius: 50px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      overflow: hidden; /* Potong teks yang keluar jalur */
+      overflow: hidden; 
       display: flex;
       align-items: center;
+      position: relative;
     }
 
-    /* WRAPPER ANIMASI */
-    .marquee-wrapper {
-      display: flex;
-      width: max-content; /* Biarkan melebar sesuai isi */
-      animation: scroll-left 20s linear infinite;
-    }
-
+    /* LOGIKA SINGLE LINE LOOP */
     .ticker-text {
+      position: absolute;
+      white-space: nowrap;
       font-size: 16px;
       font-weight: 700;
       color: #fff;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      line-height: 35px;
-      padding-right: 50px; /* Jarak antar kalimat */
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      /* Animasi: Muncul dari kanan luar ke kiri luar */
+      animation: loop-single-line 15s linear infinite;
     }
 
-    /* JAM DIGITAL */
+    @keyframes loop-single-line {
+      0% { transform: translateX(100vw); } /* Mulai dari kanan layar */
+      100% { transform: translateX(-100%); } /* Berakhir setelah teks habis di kiri */
+    }
+
+    /* JAM DIGITAL CLEAN */
     .digital-clock {
-      min-width: 110px;
-      height: 35px;
+      min-width: 100px;
+      height: 38px;
       background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(10px);
       border-radius: 50px;
@@ -77,14 +78,6 @@
       font-size: 16px;
       font-weight: 700;
     }
-
-    /* LOGIKA SEAMLESS: 
-       Kita geser -50% dari total lebar wrapper 
-       karena isi wrapper adalah dua set teks yang identik */
-    @keyframes scroll-left {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
   </style>
 </head>
 <body onclick="startDisplay()">
@@ -94,17 +87,8 @@
 
     <div class="bottom-controls">
       <div class="overlay-ticker">
-        <div class="marquee-wrapper">
-          <div class="ticker-text">
-            <span>EASTON PARK RESIDENCE JATINANGOR</span>
-            <span style="margin-left:50px;">EASTON PARK RESIDENCE JATINANGOR</span>
-            <span style="margin-left:50px;">EASTON PARK RESIDENCE JATINANGOR</span>
-          </div>
-          <div class="ticker-text">
-            <span>EASTON PARK RESIDENCE JATINANGOR</span>
-            <span style="margin-left:50px;">EASTON PARK RESIDENCE JATINANGOR</span>
-            <span style="margin-left:50px;">EASTON PARK RESIDENCE JATINANGOR</span>
-          </div>
+        <div class="ticker-text">
+          EASTON PARK RESIDENCE JATINANGOR - COMFORTABLE LIVING SPACE
         </div>
       </div>
 
@@ -113,7 +97,7 @@
   </div>
 
 <script>
-  const VIDEO_URL = "https://github.com/kimiimagestudio-dev/tv-media/raw/refs/heads/main/redpandacompress_TESTING%20TV%20MEDIA%20(4).mp4";
+  const VIDEO_URL = "reminder%20(30%20x%2020%20cm)-2.mp4";
   const v = document.getElementById('video-slot');
 
   function startDisplay() {
@@ -125,22 +109,28 @@
 
   function updateClock() {
     const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB');
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
   }
   setInterval(updateClock, 1000);
   updateClock();
 
-  // Auto-refresh logic
+  // Auto-refresh logic (3 detik sekali cek update file)
   let lastUpdate = "";
   setInterval(() => {
-    fetch(window.location.href, { method: 'HEAD' }).then(res => {
+    fetch(window.location.href, { method: 'HEAD', cache: 'no-cache' }).then(res => {
       let etag = res.headers.get("ETag") || res.headers.get("Last-Modified");
-      if (lastUpdate && etag !== lastUpdate) location.reload();
+      if (lastUpdate && etag !== lastUpdate) location.reload(true);
       lastUpdate = etag;
-    });
+    }).catch(() => {});
   }, 3000);
 
-  window.onload = () => { v.src = VIDEO_URL; v.play().catch(()=>{}); };
+  window.onload = () => { 
+    v.src = VIDEO_URL; 
+    v.play().catch(()=>{}); 
+  };
 </script>
 </body>
 </html>
