@@ -6,7 +6,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Easton Park - Ultra Slim Display</title>
+  <title>Easton Park - Seamless Display</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
     html, body { 
@@ -23,52 +23,52 @@
       overflow: hidden;
     }
 
-    /* VIDEO FULL 1080P BACKGROUND */
+    /* VIDEO FULL 1080P */
     #video-slot {
       position: absolute;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      object-fit: fill; /* Paksa Full Screen */
+      object-fit: fill;
       z-index: 1;
     }
 
-    /* RUNNING TEXT ULTRA SLIM & BOTTOM */
+    /* RUNNING TEXT ULTRA TRANSPARENT & BOTTOM */
     .overlay-ticker {
       position: absolute;
-      bottom: 15px; /* Jarak sangat tipis dari bawah */
-      left: 50%;
-      transform: translateX(-50%);
-      width: 96%;
-      height: 40px; /* Diperkecil lagi */
-      background: rgba(0, 0, 0, 0.75); 
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 50px; 
+      bottom: 10px; /* Mentok bawah */
+      left: 0;
+      width: 100%;
+      height: 45px;
+      /* Background lebih transparan (0.4) */
+      background: rgba(0, 0, 0, 0.4); 
       display: flex; align-items: center;
       overflow: hidden;
       z-index: 10;
     }
 
-    /* ANIMASI SEAMLESS */
+    /* ANIMASI SEAMLESS TANPA PUTUS */
     .marquee-container {
       display: flex;
       white-space: nowrap;
       will-change: transform;
-      animation: seamless-scroll 15s linear infinite;
+      /* Durasi 20 detik untuk kehalusan jalan teks */
+      animation: seamless-scroll 20s linear infinite;
     }
 
     .ticker-text {
-      font-size: 18px; /* Ukuran teks lebih kecil & elegan */
+      font-size: 20px;
       font-weight: 700;
       color: #ffffff;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      padding-right: 150px; /* Space antar loop */
+      /* Space antar teks agar rapi */
+      padding-right: 100px; 
       display: inline-block;
     }
 
     @keyframes seamless-scroll {
       0% { transform: translateX(0); }
+      /* Geser tepat ke titik awal duplikasi */
       100% { transform: translateX(-50%); } 
     }
   </style>
@@ -82,33 +82,30 @@
       <div class="marquee-container">
         <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
         <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
       </div>
     </div>
   </div>
 
 <script>
-  // GANTI NAMA FILE VIDEO DI SINI
   const VIDEO_URL = "reminder%20(30%20x%2020%20cm)-2.mp4";
-  
   const v = document.getElementById('video-slot');
 
-  // Jalankan otomatis saat diklik atau interaksi pertama
   function startDisplay() {
     // Paksa Fullscreen
     const doc = document.documentElement;
     if (doc.requestFullscreen) doc.requestFullscreen();
     else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
     
-    // Putar Video dengan Anti-Cache
+    // Putar Video
     v.src = VIDEO_URL + "?v=" + new Date().getTime();
     v.play();
     
-    // Sembunyikan kursor setelah jalan
-    document.body.style.cursor = 'none';
     document.body.onclick = null; 
   }
 
-  // LOGIKA AUTO REFRESH INSTAN (2 DETIK)
+  // AUTO REFRESH INSTAN 2 DETIK
   let lastUpdateTag = "";
   function checkUpdate() {
     fetch(window.location.href, { method: 'HEAD', cache: 'no-cache' })
@@ -126,9 +123,8 @@
   window.onload = () => {
     checkUpdate();
     v.src = VIDEO_URL;
-    // Coba autoplay otomatis (beberapa TV mendukung tanpa klik)
     v.play().catch(() => {
-      console.log("Klik layar 1x untuk Fullscreen & Start");
+      console.log("Menunggu interaksi user...");
     });
   };
 </script>
