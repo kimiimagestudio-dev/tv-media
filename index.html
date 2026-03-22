@@ -6,14 +6,15 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Easton Park - Seamless Display</title>
+  <title>Easton Park - Final Display</title>
   <style>
+    /* Reset Tampilan */
     * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
     html, body { 
       width: 100%; height: 100%; 
       background: #000; overflow: hidden; 
       cursor: none; 
-      font-family: 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .screen-wrapper {
@@ -23,52 +24,53 @@
       overflow: hidden;
     }
 
-    /* VIDEO FULL 1080P */
+    /* VIDEO FULL 1920x1080 (BACKGROUND) */
     #video-slot {
       position: absolute;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      object-fit: fill;
+      object-fit: fill; /* Paksa Full Screen sesuai resolusi TV */
       z-index: 1;
     }
 
     /* RUNNING TEXT ULTRA TRANSPARENT & BOTTOM */
     .overlay-ticker {
       position: absolute;
-      bottom: 10px; /* Mentok bawah */
+      bottom: 0; /* Mentok ke paling bawah */
       left: 0;
       width: 100%;
-      height: 45px;
-      /* Background lebih transparan (0.4) */
-      background: rgba(0, 0, 0, 0.4); 
-      display: flex; align-items: center;
+      height: 40px; /* Slim/Kecil */
+      background: rgba(0, 0, 0, 0.35); /* Sangat Transparan */
+      display: flex; 
+      align-items: center;
       overflow: hidden;
       z-index: 10;
+      backdrop-filter: blur(2px); /* Efek kaca tipis */
     }
 
-    /* ANIMASI SEAMLESS TANPA PUTUS */
+    /* ANIMASI SEAMLESS CEPAT */
     .marquee-container {
       display: flex;
       white-space: nowrap;
       will-change: transform;
-      /* Durasi 20 detik untuk kehalusan jalan teks */
-      animation: seamless-scroll 20s linear infinite;
+      /* Durasi 12 detik (Makin kecil angka = Makin CEPAT) */
+      animation: seamless-scroll 12s linear infinite;
     }
 
     .ticker-text {
-      font-size: 20px;
+      font-size: 19px; /* Ukuran teks proporsional */
       font-weight: 700;
       color: #ffffff;
       text-transform: uppercase;
-      /* Space antar teks agar rapi */
-      padding-right: 100px; 
+      padding-right: 150px; /* Space antar teks agar nyambung rapi */
       display: inline-block;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Agar teks tetap terbaca jelas */
     }
 
+    /* Logika Jalan dari Kanan ke Kiri Tanpa Putus */
     @keyframes seamless-scroll {
       0% { transform: translateX(0); }
-      /* Geser tepat ke titik awal duplikasi */
       100% { transform: translateX(-50%); } 
     }
   </style>
@@ -81,47 +83,64 @@
     <div class="overlay-ticker">
       <div class="marquee-container">
         <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
+        <span class="ticker-text">EASTON PARK RESIDENCE JATINANGOR</span>
       </div>
     </div>
   </div>
 
 <script>
-  const VIDEO_URL = "https://github.com/kimiimagestudio-dev/tv-media/raw/refs/heads/main/redpandacompress_TESTING%20TV%20MEDIA%20(4).mp4";
+  /** * GANTI SUMBER VIDEO DI SINI 
+   * Pastikan nama file sesuai dengan yang ada di repository GitHub Anda
+   */
+  const VIDEO_URL = "reminder%20(30%20x%2020%20cm)-2.mp4";
+  
   const v = document.getElementById('video-slot');
 
+  /**
+   * Fungsi untuk memicu Fullscreen dan Play Video
+   * Diperlukan 1x klik/interaksi pada layar TV saat pertama kali dibuka
+   */
   function startDisplay() {
-    // Paksa Fullscreen
     const doc = document.documentElement;
     if (doc.requestFullscreen) doc.requestFullscreen();
     else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
     
-    // Putar Video
+    // Play video dengan cache buster agar selalu ambil yang terbaru
     v.src = VIDEO_URL + "?v=" + new Date().getTime();
     v.play();
     
+    // Matikan fungsi klik agar tidak terpicu dua kali
     document.body.onclick = null; 
   }
 
-  // AUTO REFRESH INSTAN 2 DETIK
+  /**
+   * LOGIKA AUTO REFRESH INSTAN (CEK TIAP 2 DETIK)
+   * Jika Anda mengedit file index.html di GitHub, TV akan otomatis Reload
+   */
   let lastUpdateTag = "";
   function checkUpdate() {
     fetch(window.location.href, { method: 'HEAD', cache: 'no-cache' })
       .then(res => {
         const currentTag = res.headers.get("Last-Modified") || res.headers.get("ETag");
         if (lastUpdateTag && currentTag && lastUpdateTag !== currentTag) {
+          // Perubahan terdeteksi, paksa reload halaman
           location.reload(true); 
         }
         lastUpdateTag = currentTag;
-      }).catch(() => {});
+      }).catch(e => console.log("Gagal mengecek update"));
   }
 
+  // Interval pengecekan diperketat menjadi 2 detik
   setInterval(checkUpdate, 2000);
   
   window.onload = () => {
     checkUpdate();
     v.src = VIDEO_URL;
+    // Mencoba autoplay (Beberapa browser Smart TV mendukung jika muted)
     v.play().catch(() => {
-      console.log("Menunggu interaksi user...");
+      console.log("Menunggu klik pertama untuk Fullscreen & Start...");
     });
   };
 </script>
